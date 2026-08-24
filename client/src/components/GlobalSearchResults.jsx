@@ -7,9 +7,7 @@ export default function GlobalSearchResults({ engagements, query, onOpen }) {
   const rows = [];
   for (const eng of engagements) {
     for (const ev of eng.events || []) {
-      if (eventMatches(ev, query)) {
-        rows.push({ eng, ev });
-      }
+      if (eventMatches(ev, query)) rows.push({ eng, ev });
     }
   }
 
@@ -17,7 +15,7 @@ export default function GlobalSearchResults({ engagements, query, onOpen }) {
     return (
       <div className="empty-state">
         <h3>No matches</h3>
-        <p>Nothing in your archive matches “{query}”.</p>
+        <p>Nothing in your archive matches "{query}".</p>
       </div>
     );
   }
@@ -26,7 +24,7 @@ export default function GlobalSearchResults({ engagements, query, onOpen }) {
     <div className="global-results">
       <div className="global-results-count">
         {rows.length} matching event{rows.length === 1 ? "" : "s"} across {engagements.length}{" "}
-        engagement{engagements.length === 1 ? "" : "s"}
+        engagement{engagements.length === 1 ? "" : "s"} — click any to open it
       </div>
       {rows.map(({ eng, ev }, i) => {
         const phase = getPhase(ev.phase);
@@ -35,7 +33,7 @@ export default function GlobalSearchResults({ engagements, query, onOpen }) {
           <button
             key={`${eng.id}-${ev.id}-${i}`}
             className="global-result-row"
-            onClick={() => onOpen(eng.id)}
+            onClick={() => onOpen(eng.id, ev.id)}   // ← pass event id
           >
             <span className="phase-dot" style={{ "--hue": phase.hue }}>
               <Icon />
@@ -47,6 +45,11 @@ export default function GlobalSearchResults({ engagements, query, onOpen }) {
               <div className="global-result-cmd mono">
                 <Highlight text={ev.command} query={query} />
               </div>
+              {ev.description && (
+                <div className="global-result-desc">
+                  <Highlight text={ev.description} query={query} />
+                </div>
+              )}
             </div>
             <div className="global-result-source">
               <CornerDownRight />

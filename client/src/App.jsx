@@ -9,6 +9,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeId, setActiveId] = useState(null);
+  const [activeEventId, setActiveEventId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -23,9 +24,17 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
+
+  function handleOpen(engId, eventId = null) {
+    setActiveId(engId);
+    setActiveEventId(eventId);
+  }
+
+  function handleBack() {
+    setActiveId(null);
+    setActiveEventId(null);
+  }
 
   const active = engagements.find((e) => e.id === activeId) || null;
 
@@ -33,7 +42,8 @@ export default function App() {
     return (
       <EngagementView
         engagement={active}
-        onBack={() => setActiveId(null)}
+        initialEventId={activeEventId}
+        onBack={handleBack}
       />
     );
   }
@@ -43,7 +53,7 @@ export default function App() {
       engagements={engagements}
       loading={loading}
       error={error}
-      onOpen={(id) => setActiveId(id)}
+      onOpen={handleOpen}
       onRefresh={load}
     />
   );

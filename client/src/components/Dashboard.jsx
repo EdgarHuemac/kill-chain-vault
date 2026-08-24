@@ -3,6 +3,7 @@ import { Search, ShieldHalf, RefreshCw } from "lucide-react";
 import ImportButton from "./ImportButton.jsx";
 import EngagementCard from "./EngagementCard.jsx";
 import GlobalSearchResults from "./GlobalSearchResults.jsx";
+import StatsPanel from "./StatsPanel.jsx";
 import { engagementMatches } from "../search.js";
 import "./Dashboard.css";
 
@@ -14,15 +15,11 @@ export default function Dashboard({ engagements, loading, error, onOpen, onRefre
     [engagements, query]
   );
 
-  const totalEvents = engagements.reduce((sum, e) => sum + (e.events?.length || 0), 0);
-
   return (
     <div className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark">
-            <ShieldHalf />
-          </span>
+          <span className="brand-mark"><ShieldHalf /></span>
           KILL CHAIN VAULT
           <span className="brand-sub">engagement archive</span>
         </div>
@@ -43,14 +40,9 @@ export default function Dashboard({ engagements, loading, error, onOpen, onRefre
       </header>
 
       <main className="page">
-        <div className="stats-row">
-          <div className="stat-chip">
-            <span className="stat-num">{engagements.length}</span> engagements
-          </div>
-          <div className="stat-chip">
-            <span className="stat-num">{totalEvents}</span> logged events
-          </div>
-        </div>
+        {!loading && engagements.length > 0 && !query.trim() && (
+          <StatsPanel engagements={engagements} />
+        )}
 
         {error && <div className="banner-error">{error}</div>}
 
@@ -67,11 +59,14 @@ export default function Dashboard({ engagements, loading, error, onOpen, onRefre
             </p>
           </div>
         ) : (
-          <div className="engagement-grid">
-            {filtered.map((eng) => (
-              <EngagementCard key={eng.id} engagement={eng} onClick={() => onOpen(eng.id)} />
-            ))}
-          </div>
+          <>
+            <div className="engagements-label">All Engagements</div>
+            <div className="engagement-grid">
+              {filtered.map((eng) => (
+                <EngagementCard key={eng.id} engagement={eng} onClick={() => onOpen(eng.id)} />
+              ))}
+            </div>
+          </>
         )}
       </main>
     </div>

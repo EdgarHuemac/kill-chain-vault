@@ -1,23 +1,28 @@
-import { useState } from "react";
-import { ArrowLeft, Search, ShieldHalf, GitBranch } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { ArrowLeft, Search, ShieldHalf, GitBranch, ArrowRight, ArrowDown } from "lucide-react";
 import GraphView from "./GraphView.jsx";
 import TimelineLog from "./TimelineLog.jsx";
 import EventDetailDrawer from "./EventDetailDrawer.jsx";
 import { eventMatches } from "../search.js";
 import "./EngagementView.css";
 
-const TYPE_LABEL = {
-  CTF: "CTF",
-  PENTEST: "Pentest",
-  CYBERATTACK: "Cyberattack",
-  RESEARCH: "Research",
-};
+const TYPE_LABEL = { CTF: "CTF", PENTEST: "Pentest", CYBERATTACK: "Cyberattack", RESEARCH: "Research" };
 
-export default function EngagementView({ engagement, onBack }) {
+export default function EngagementView({ engagement, initialEventId, onBack }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
+  const [direction, setDirection] = useState("LR");
+  const timelineRef = useRef(null);
   const events = engagement.events || [];
   const matchCount = events.filter((e) => eventMatches(e, query)).length;
+
+  // If opened from a search result, scroll to the timeline section
+  useEffect(() => {
+    if (!initialEventId) return;
+    setTimeout(() => {
+      timelineRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  }, [initialEventId]);
 
   return (
     <div className="app-shell">
@@ -25,10 +30,8 @@ export default function EngagementView({ engagement, onBack }) {
         <button className="btn btn-ghost btn-icon" onClick={onBack} title="Back to dashboard">
           <ArrowLeft />
         </button>
-        <div className="brand" onClick={onBack} style={{ cursor: "pointer" }}>
-          <span className="brand-mark">
-            <ShieldHalf />
-          </span>
+        <div className="brand" onClick={onBack}>
+          <span className="brand-mark"><ShieldHalf /></span>
         </div>
         <div className="eng-view-heading">
           <span className="badge">{TYPE_LABEL[engagement.type] || engagement.type}</span>
@@ -49,20 +52,43 @@ export default function EngagementView({ engagement, onBack }) {
       <main className="page eng-view-page">
         {query.trim() && (
           <div className="match-summary">
-            <GitBranch /> {matchCount} of {events.length} events match “{query}”
+            <GitBranch /> {matchCount} of {events.length} events match "{query}"
           </div>
         )}
 
         <section className="graph-panel">
-          <GraphView events={events} query={query} onSelect={setSelected} />
+          <div className="graph-toolbar">
+            <span className="section-label" style={{ margin: 0 }}>Graph</span>
+            <span className="graph-event-count">{events.length} events</span>
+            <div className="spacer" />
+            <div className="layout-toggle">
+              <button
+                className={`btn btn-ghost btn-icon layout-btn ${direction === "LR" ? "layout-btn-active" : ""}`}
+                onClick={() => setDirection("LR")}
+                title="Left → Right layout"
+              >
+                <ArrowRight />
+              </button>
+              <button
+                className={`btn btn-ghost btn-icon layout-btn ${direction === "TB" ? "layout-btn-active" : ""}`}
+                onClick={() => setDirection("TB")}
+                title="Top → Bottom layout"
+              >
+                <ArrowDown />
+              </button>
+            </div>
+          </div>
+          <div className="graph-canvas">
+            <GraphView events={events} query={query} onSelect={setSelected} direction={direction} />
+          </div>
         </section>
 
-        <section className="timeline-panel">
+        <section className="timeline-panel" ref={timelineRef}>
           <h3 className="section-label">Timeline log</h3>
           {events.length === 0 ? (
             <div className="empty-state">This engagement has no events yet.</div>
           ) : (
-            <TimelineLog events={events} query={query} />
+            <TimelineLog events={events} query={query} initialOpenEventId={initialEventId} />
           )}
         </section>
       </main>

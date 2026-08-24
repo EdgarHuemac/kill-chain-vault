@@ -1,17 +1,38 @@
-import { useMemo } from "react";
-import ReactFlow, { Background, Controls, MarkerType } from "reactflow";
+import { useCallback, useMemo } from "react";
+import ReactFlow, {
+  Background,
+  Controls,
+  MarkerType,
+  useReactFlow,
+  ReactFlowProvider,
+} from "reactflow";
 import "reactflow/dist/style.css";
 import EventNode from "./EventNode.jsx";
-import { layoutEvents } from "../layout.js";
+import { layoutEvents, NODE_WIDTH, NODE_HEIGHT } from "../layout.js";
 import { eventMatches } from "../search.js";
+import { getPhase } from "../killchain.js";
 import "./GraphView.css";
 
 const nodeTypes = { eventNode: EventNode };
 
-export default function GraphView({ events, query, onSelect }) {
+// Distinct, subtle edge palette for branching paths
+const EDGE_PALETTE = ["#5aa9ff","#ff5c5c","#4ade80","#f5a623","#c084fc","#37d6c7","#ff9f43"];
+
+function FlowInner({ events, query, onSelect, direction }) {
+  const { fitView } = useReactFlow();
+
   const { nodes, edges } = useMemo(() => {
-    const positions = layoutEvents(events);
+    const positions = layoutEvents(events, direction);
     const searching = !!(query && query.trim());
+
+    // Count outgoing edges per node to assign colors
+    const outCounts = new Map();
+    events.forEach((ev) => {
+      (ev.connections || []).forEach((tid) => {
+        if (!outCounts.has(ev.id)) outCounts.set(ev.id, []);
+        outCounts.get(ev.id).push(tid);
+      });
+    });
 
     const nodes = events.map((event) => {
       const isMatch = eventMatches(event, query);
@@ -19,66 +40,82 @@ export default function GraphView({ events, query, onSelect }) {
         id: event.id,
         type: "eventNode",
         position: positions.get(event.id) || { x: 0, y: 0 },
-        data: {
-          event,
-          query,
-          isMatch,
-          dimmed: searching && !isMatch,
-          onSelect,
-        },
+        data: { event, query, isMatch, dimmed: searching && !isMatch, onSelect },
         draggable: true,
         connectable: false,
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
       };
     });
 
     const edges = [];
     events.forEach((event) => {
-      (event.connections || []).forEach((targetId) => {
+      const targets = outCounts.get(event.id) || [];
+      const isBranching = targets.length > 1;
+
+      targets.forEach((targetId, idx) => {
         const targetEvent = events.find((e) => e.id === targetId);
         if (!targetEvent) return;
-        const bothMatch =
-          !searching || (eventMatches(event, query) && eventMatches(targetEvent, query));
+
+        const bothMatch = !searching || (eventMatches(event, query) && eventMatches(targetEvent, query));
+        // Use target phase color for branching edges so each path is distinct
+        const targetPhase = getPhase(targetEvent.phase);
+        const edgeColor = isBranching
+          ? targetPhase.hue
+          : bothMatch ? "#404040" : "#1e1e1e";
+
         edges.push({
           id: `${event.id}->${targetId}`,
           source: event.id,
           target: targetId,
-          type: "smoothstep",
+          type: "bezier",
           animated: false,
-          style: {
-            stroke: bothMatch ? "#3a3a3a" : "#1c1c1c",
-            strokeWidth: 1.5,
-          },
+          style: { stroke: edgeColor, strokeWidth: isBranching ? 2 : 1.5, opacity: bothMatch ? 1 : 0.25 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: bothMatch ? "#3a3a3a" : "#1c1c1c",
-            width: 16,
-            height: 16,
+            color: edgeColor,
+            width: 14,
+            height: 14,
           },
         });
       });
     });
 
     return { nodes, edges };
-  }, [events, query, onSelect]);
+  }, [events, query, onSelect, direction]);
+
+  const onInit = useCallback(() => {
+    setTimeout(() => fitView({ padding: 0.25, maxZoom: 1.1 }), 50);
+  }, [fitView]);
 
   return (
+    <ReactFlow
+      key={direction}
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      onInit={onInit}
+      fitView
+      fitViewOptions={{ padding: 0.25, maxZoom: 1.1 }}
+      proOptions={{ hideAttribution: true }}
+      nodesConnectable={false}
+      nodesDraggable={true}
+      elementsSelectable={true}
+      minZoom={0.15}
+      maxZoom={2}
+    >
+      <Background color="#111" gap={24} size={1.2} />
+      <Controls showInteractive={false} />
+    </ReactFlow>
+  );
+}
+
+export default function GraphView({ events, query, onSelect, direction = "LR" }) {
+  return (
     <div className="graph-view">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.3 }}
-        proOptions={{ hideAttribution: true }}
-        nodesConnectable={false}
-        nodesDraggable={true}
-        elementsSelectable={true}
-        minZoom={0.3}
-        maxZoom={1.8}
-      >
-        <Background color="#161616" gap={22} size={1.5} />
-        <Controls showInteractive={false} />
-      </ReactFlow>
+      <ReactFlowProvider>
+        <FlowInner events={events} query={query} onSelect={onSelect} direction={direction} />
+      </ReactFlowProvider>
     </div>
   );
 }
