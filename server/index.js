@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from "uuid";
+import { generateEngagementPdf } from "./pdf.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "..", "data", "engagements");
@@ -104,6 +105,30 @@ app.delete("/api/engagements/:id", async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ---- PDF report download --------------------------------------------------
+
+app.get("/api/engagements/:id/pdf", async (req, res) => {
+  try {
+    const engagements = await readAllEngagements();
+    const found = engagements.find((e) => e.id === req.params.id);
+    if (!found) return res.status(404).json({ error: "Engagement not found" });
+
+    const safeName = (found.title || "Engagement")
+      .replace(/[^a-zA-Z0-9 \-_.]/g, "_")
+      .trim();
+    const filename = `${safeName} - Report.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+
+    generateEngagementPdf(found, res);
+  } catch (err) {
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 

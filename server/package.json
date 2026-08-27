@@ -7,9 +7,11 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "killchain-vault": "file:..",
+    "pdfkit": "^0.20.1",
     "uuid": "^9.0.1"
   }
 }

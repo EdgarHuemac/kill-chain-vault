@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { ArrowLeft, Search, ShieldHalf, GitBranch, ArrowRight, ArrowDown } from "lucide-react";
+import { ArrowLeft, Search, ShieldHalf, GitBranch, ArrowRight, ArrowDown, FileDown, Loader2 } from "lucide-react";
 import GraphView from "./GraphView.jsx";
 import TimelineLog from "./TimelineLog.jsx";
 import EventDetailDrawer from "./EventDetailDrawer.jsx";
@@ -12,6 +12,28 @@ export default function EngagementView({ engagement, initialEventId, onBack }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
   const [direction, setDirection] = useState("LR");
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownloadPdf() {
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/engagements/${engagement.id}/pdf`);
+      if (!res.ok) throw new Error("Server error");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${engagement.title.replace(/[^a-zA-Z0-9 \-_.]/g, "_")} - Report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF download failed:", err);
+    } finally {
+      setDownloading(false);
+    }
+  }
   const timelineRef = useRef(null);
   const events = engagement.events || [];
   const matchCount = events.filter((e) => eventMatches(e, query)).length;
@@ -38,6 +60,15 @@ export default function EngagementView({ engagement, initialEventId, onBack }) {
           <h1>{engagement.title}</h1>
         </div>
         <div className="spacer" />
+        <button
+          className="btn btn-ghost pdf-btn"
+          onClick={handleDownloadPdf}
+          disabled={downloading}
+          title="Download PDF report"
+        >
+          {downloading ? <Loader2 className="spin" /> : <FileDown />}
+          {downloading ? "Generating…" : "PDF Report"}
+        </button>
         <div className="search-input-wrap">
           <Search />
           <input

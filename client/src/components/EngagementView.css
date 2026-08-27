@@ -98,3 +98,13 @@
 .timeline-panel {
   padding-bottom: 40px;
 }
+
+.pdf-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
