@@ -99,8 +99,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--hue) 14%, #0a0a0a);
-  border: 1px solid color-mix(in srgb, var(--hue) 35%, #1a1a1a);
+  background: color-mix(in srgb, var(--hue) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--hue) 35%, var(--border));
   color: var(--hue);
   flex-shrink: 0;
 }

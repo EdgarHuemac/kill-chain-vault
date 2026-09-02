@@ -23,6 +23,40 @@
   color-scheme: dark;
 }
 
+[data-theme="light"] {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --surface-2: #efefef;
+  --surface-3: #e5e5e5;
+  --border: #d6d6d6;
+  --border-soft: #e2e2e2;
+  --text: #111111;
+  --text-dim: #4a4a4a;
+  --text-faint: #909090;
+  --accent: #111111;
+  --match: #16a34a;
+  --match-glow: rgba(22, 163, 74, 0.18);
+  --danger: #dc2626;
+  color-scheme: light;
+}
+
+/* Light mode: keep code blocks dark, fix their border */
+[data-theme="light"] .code-block {
+  border-color: #2d2d2d;
+}
+[data-theme="light"] .log-code-header {
+  border-color: #2d2d2d;
+  border-bottom-color: #1a1a1a;
+}
+
+/* Light mode scrollbars */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #bcbcbc;
+}
+
 * {
   box-sizing: border-box;
 }

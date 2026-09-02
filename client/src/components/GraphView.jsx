@@ -11,6 +11,7 @@ import EventNode from "./EventNode.jsx";
 import { layoutEvents, NODE_WIDTH, NODE_HEIGHT } from "../layout.js";
 import { eventMatches } from "../search.js";
 import { getPhase } from "../killchain.js";
+import { useTheme } from "../ThemeContext.jsx";
 import "./GraphView.css";
 
 const nodeTypes = { eventNode: EventNode };
@@ -20,6 +21,7 @@ const EDGE_PALETTE = ["#5aa9ff","#ff5c5c","#4ade80","#f5a623","#c084fc","#37d6c7
 
 function FlowInner({ events, query, onSelect, direction }) {
   const { fitView } = useReactFlow();
+  const { theme } = useTheme();
 
   const { nodes, edges } = useMemo(() => {
     const positions = layoutEvents(events, direction);
@@ -104,7 +106,7 @@ function FlowInner({ events, query, onSelect, direction }) {
       minZoom={0.15}
       maxZoom={2}
     >
-      <Background color="#111" gap={24} size={1.2} />
+      <Background color={theme === "dark" ? "#111111" : "#e0e0e0"} gap={24} size={1.2} />
       <Controls showInteractive={false} />
     </ReactFlow>
   );

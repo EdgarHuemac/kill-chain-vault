@@ -112,8 +112,8 @@
   width: 46px;
   height: 46px;
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--hue) calc(var(--ratio) * 18%), #0a0a0a);
-  border: 1.5px solid color-mix(in srgb, var(--hue) calc(var(--ratio) * 50% + 15%), #1c1c1c);
+  background: color-mix(in srgb, var(--hue) calc(var(--ratio) * 18%), var(--surface));
+  border: 1.5px solid color-mix(in srgb, var(--hue) calc(var(--ratio) * 50% + 15%), var(--border));
   color: var(--hue);
   display: flex;
   align-items: center;

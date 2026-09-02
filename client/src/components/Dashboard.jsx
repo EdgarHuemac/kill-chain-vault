@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
-import { Search, ShieldHalf, RefreshCw } from "lucide-react";
+import { Search, ShieldHalf, RefreshCw, Sun, Moon } from "lucide-react";
 import ImportButton from "./ImportButton.jsx";
 import EngagementCard from "./EngagementCard.jsx";
 import GlobalSearchResults from "./GlobalSearchResults.jsx";
 import StatsPanel from "./StatsPanel.jsx";
 import { engagementMatches } from "../search.js";
+import { useTheme } from "../ThemeContext.jsx";
 import "./Dashboard.css";
 
 export default function Dashboard({ engagements, loading, error, onOpen, onRefresh }) {
   const [query, setQuery] = useState("");
+  const { theme, toggle } = useTheme();
 
   const filtered = useMemo(
     () => engagements.filter((e) => engagementMatches(e, query)),
@@ -33,6 +35,10 @@ export default function Dashboard({ engagements, loading, error, onOpen, onRefre
           />
         </div>
         <div className="spacer" />
+        <button className="btn btn-ghost btn-icon theme-toggle" onClick={toggle}
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+          {theme === "dark" ? <Sun /> : <Moon />}
+        </button>
         <button className="btn btn-ghost btn-icon" title="Refresh" onClick={onRefresh}>
           <RefreshCw />
         </button>

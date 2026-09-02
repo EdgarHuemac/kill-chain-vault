@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { ArrowLeft, Search, ShieldHalf, GitBranch, ArrowRight, ArrowDown, FileDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, ShieldHalf, GitBranch, ArrowRight, ArrowDown, FileDown, Loader2, Sun, Moon } from "lucide-react";
+import { useTheme } from "../ThemeContext.jsx";
 import GraphView from "./GraphView.jsx";
 import TimelineLog from "./TimelineLog.jsx";
 import EventDetailDrawer from "./EventDetailDrawer.jsx";
@@ -13,6 +14,7 @@ export default function EngagementView({ engagement, initialEventId, onBack }) {
   const [selected, setSelected] = useState(null);
   const [direction, setDirection] = useState("LR");
   const [downloading, setDownloading] = useState(false);
+  const { theme, toggle } = useTheme();
 
   async function handleDownloadPdf() {
     setDownloading(true);
@@ -60,6 +62,10 @@ export default function EngagementView({ engagement, initialEventId, onBack }) {
           <h1>{engagement.title}</h1>
         </div>
         <div className="spacer" />
+        <button className="btn btn-ghost btn-icon theme-toggle" onClick={toggle}
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+          {theme === "dark" ? <Sun /> : <Moon />}
+        </button>
         <button
           className="btn btn-ghost pdf-btn"
           onClick={handleDownloadPdf}

@@ -54,8 +54,8 @@
   width: 54px;
   height: 54px;
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--hue) 10%, #050505);
-  border: 1.5px solid color-mix(in srgb, var(--hue) 40%, #1c1c1c);
+  background: color-mix(in srgb, var(--hue) 10%, var(--surface));
+  border: 1.5px solid color-mix(in srgb, var(--hue) 40%, var(--border));
   color: var(--hue);
   display: flex;
   align-items: center;
@@ -69,7 +69,7 @@
 
 .event-node-box:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--hue) 75%, #1c1c1c);
+  border-color: color-mix(in srgb, var(--hue) 75%, var(--border));
   box-shadow: 0 4px 16px color-mix(in srgb, var(--hue) 20%, transparent);
 }
 

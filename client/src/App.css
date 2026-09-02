@@ -77,12 +77,12 @@
 
 .btn-primary {
   background: var(--text);
-  color: #000;
+  color: var(--bg);
   border-color: var(--text);
 }
 
 .btn-primary:hover {
-  background: #cfcfcf;
+  background: color-mix(in srgb, var(--text) 82%, var(--bg));
 }
 
 .btn-ghost {
@@ -187,6 +187,14 @@
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.theme-toggle svg {
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(18deg);
 }
 
 .import-error {
