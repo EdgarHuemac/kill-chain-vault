@@ -1,8 +1,10 @@
 # Kill Chain Vault
 
 A web app for documenting and visualizing CTFs, pentests, and cyberattack timelines as Cyber Kill Chain graphs.
-
 The sole purpose of this project is to help me document & organize CTFs for some cybersecurit certs. It might also be useful for real pentests, but who knows...
+
+
+https://github.com/user-attachments/assets/20a6eeaa-6043-4205-a06a-51ebe53ccf5e
 
 ```
 Dashboard (list + global search + import)
@@ -11,7 +13,8 @@ Dashboard (list + global search + import)
 Engagement view
   ├─ Graph: events as icon-boxes, connected in chronological order
   ├─ In-engagement search (highlights matches in the graph + log)
-  └─ Timeline log: plain-text accordion, one row per event
+  ├─ Timeline log: plain-text accordion, one row per event
+  └─ Download PDF report option
 ```
 
 
